@@ -9,6 +9,7 @@ cloudinary.config({
 });
 
 const formData = (req, res, next) => {
+  let img = [];
   let uploadingFile = false;
   let uploadingCount = 0;
 
@@ -31,11 +32,15 @@ const formData = (req, res, next) => {
     uploadingFile = true;
     uploadingCount++;
     const cloud = cloudinary.uploader.upload_stream(
-      { upload_preset: 'pad-preset' },
+      { upload_preset: 'top24' },
       (err, res) => {
         if (err) throw new Error('Something went wrong!');
 
-        req.body[key] = res?.secure_url;
+        //req.body[key] = res.secure_url;
+        delete req.body[key];
+        img.push(res.secure_url);
+        req.body.images = img;
+
         uploadingFile = false;
         uploadingCount--;
         done();

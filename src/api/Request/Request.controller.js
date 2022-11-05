@@ -33,19 +33,23 @@ module.exports = {
 
   async create(req, res) {
     try {
-      console.log(1);
+      //console.log(1);
       const data = req.body;
       const user = req.userId;
-      console.log('data', data);
+      //console.log('data', data);
       if (!user) {
         throw new Error('Favs invalido');
       }
+      let matter = [];
+      const valSplit = data.materials.split(',');
+      valSplit.forEach((item) => matter.push(item));
 
       const newrequests = {
         ...data,
+        materials: matter,
         userId: user,
       };
-      console.log('new', newrequests);
+      //console.log('new', newrequests);
 
       const requests = await Requests.create(newrequests);
       res.status(201).json({ message: 'Requests Created', data: requests });

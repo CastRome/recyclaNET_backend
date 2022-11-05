@@ -15,14 +15,14 @@ var allowCrossDomain = function (req, res, next) {
   next();
 };
 app.use(express.json());
-app.use(
-  cors({
-    //origin: 'https://recyclanet.herokuapp.com',
-    origin: '190.84.116.210',
-    credentials: true,
-  }),
-);
-
+// app.use(
+//   cors({
+//     //origin: 'https://recyclanet.herokuapp.com',
+//     origin: '190.84.116.210',
+//     credentials: true,
+//   }),
+// );
+app.use(cors());
 //app.use(allowCrossDomain);
 
 app.use(morgan('tiny'));
