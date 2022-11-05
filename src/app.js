@@ -19,6 +19,7 @@ app.use(
   cors({
     //origin: 'https://recyclanet.herokuapp.com',
     origin: '190.84.116.210',
+    credentials: true,
   }),
 );
 
