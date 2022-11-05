@@ -10,7 +10,7 @@ module.exports = {
   async signup(req, res, next) {
     try {
       const data = req.body;
-
+      //  console.log('singup_data', data);
       //brcypt recibe (password,Salto)
       const encPassword = await bcrypt.hash(data.password, 8);
       const { password } = data;
@@ -31,9 +31,10 @@ module.exports = {
         expiresIn: 60 * 60 * 24,
       });
       await transporter.sendMail(welcome(newUser));
-      res
-        .status(201)
-        .json({ message: 'User created', data: { email: data.email, token } });
+      res.status(201).json({
+        message: 'User created',
+        data: { email: data.email, token, role: data.role },
+      });
     } catch (err) {
       res
         .status(400)
@@ -46,7 +47,7 @@ module.exports = {
     try {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
-      //console.log('antes de user', user);
+      console.log('antes de user', user);
       if (!user) {
         throw new Error('Email o contraseña invalidos');
       }
@@ -60,10 +61,10 @@ module.exports = {
         expiresIn: 60 * 60 * 24,
       });
 
-      const rol = user.rol;
+      const role = user.role;
       res.status(201).json({
         message: 'User login successfully',
-        data: { email, token, rol },
+        data: { email, token, role },
       });
     } catch (err) {
       res

@@ -27,6 +27,10 @@ const UsersSchema = new Schema(
       type: Array,
       required: false,
     },
+    Request: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'Requests' }],
+      required: false,
+    },
     role: {
       type: String,
       required: [true, 'Debe ingresar una ciudad.'],
