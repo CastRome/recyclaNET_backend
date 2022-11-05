@@ -17,10 +17,11 @@ var allowCrossDomain = function (req, res, next) {
 app.use(express.json());
 app.use(
   cors({
-    origin: 'https://recyclanet.herokuapp.com',
+    //origin: 'https://recyclanet.herokuapp.com',
+    origin: '*',
   }),
 );
-app.use(allowCrossDomain);
+//app.use(allowCrossDomain);
 
 app.use(morgan('tiny'));
 
