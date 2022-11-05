@@ -15,18 +15,16 @@ var allowCrossDomain = function (req, res, next) {
   next();
 };
 app.use(express.json());
-app.use(
-  cors({
-    //origin: 'https://recyclanet.herokuapp.com',
-    origin: '*',
-  }),
-);
-app.configure(function () {
-  app.use(allowCrossDomain);
-});
+app.use(cors());
+
 //app.use(allowCrossDomain);
 
 app.use(morgan('tiny'));
+
+var corsOptions = {
+  origin: 'https://recyclanet.herokuapp.com',
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
 
 //app.use(corsOptions);
 
