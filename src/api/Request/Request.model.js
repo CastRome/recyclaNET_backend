@@ -32,14 +32,12 @@ const RequestsSchema = new Schema(
     },
 
     userId: {
-      type: String,
-      ref: 'Users',
+      type: [{ type: Schema.Types.String, ref: 'Users' }],
       required: [true, 'Debe tener un usuario.'],
     },
     recyclerId: {
-      type: String,
-      ref: 'Users',
-      required: [false, 'Debe tener un reciclador.'],
+      type: [{ type: Schema.Types.String, ref: 'Users' }],
+      required: false,
     },
     state: {
       type: String,

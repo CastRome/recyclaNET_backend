@@ -4,10 +4,35 @@ module.exports = {
   //get all
   async list(req, res) {
     try {
-      const requests = await Requests.find().select('-_id -UserId').populate({
-        path: 'UserId',
-        select: '-_id name role',
-      });
+      const user = req.userId;
+      //console.log('data', data);
+      if (!user) {
+        throw new Error('Favs invalido');
+      }
+      const requests = await Requests.find({ userId: user })
+        .select(' ')
+        .populate({
+          path: 'userId',
+          select: '-_id name role lastname email',
+        });
+      res.status(201).json({ message: 'requests found', data: requests });
+    } catch (err) {
+      res.status(400).json(err);
+    }
+  },
+  async listPending(req, res) {
+    try {
+      const user = req.userId;
+      //console.log('data', data);
+      if (!user) {
+        throw new Error('Favs invalido');
+      }
+      const requests = await Requests.find({ recyclerId: '', state: 'pending' })
+        .select(' ')
+        .populate({
+          path: 'userId',
+          select: '-_id name role lastname email',
+        });
       res.status(201).json({ message: 'requests found', data: requests });
     } catch (err) {
       res.status(400).json(err);
@@ -20,8 +45,8 @@ module.exports = {
       const requests = await Requests.findById(requestsId)
         .select('-_id -UserId')
         .populate({
-          path: 'UserId',
-          select: '-_id name',
+          path: 'userId',
+          select: '-_id name lastname email',
         });
 
       res.status(201).json({ message: 'requests found', data: requests });
@@ -48,16 +73,88 @@ module.exports = {
         ...data,
         materials: matter,
         userId: user,
+        recyclerId: '',
       };
       //console.log('new', newrequests);
 
       const requests = await Requests.create(newrequests);
-      res.status(201).json({ message: 'Requests Created', data: requests });
+      res.status(201).json({
+        message: 'Requests Created',
+        data: { data, id: requests._id },
+      });
     } catch (error) {
       res.status(400).json({
         message: 'Requests could not be created',
         data: error.message,
       });
+    }
+  },
+  //
+  async cancel(req, res) {
+    try {
+      const { requestId } = req.params;
+
+      const requests = await Requests.findById(requestId);
+
+      const user = req.userId;
+      const userList = requests.userId[0];
+      console.log('user', user);
+      console.log('userList', userList);
+      if (!user) {
+        throw new Error('user invalido');
+      }
+      if (userList !== user) {
+        throw new Error('user invalido');
+      }
+
+      requests.state = 'cancel';
+
+      //console.log(requestId, 'new', requestsPut._doc);
+      const requestsUpdate = await Requests.findByIdAndUpdate(
+        requestId,
+        requests,
+        {
+          new: true,
+        },
+      );
+      res
+        .status(201)
+        .json({ message: 'Requests Updated', data: requestsUpdate });
+    } catch (error) {
+      res
+        .status(400)
+        .json({ message: 'Requests could not be Updated', data: error });
+    }
+  },
+  async aceptar(req, res) {
+    try {
+      const { requestId } = req.params;
+      const requests = await Requests.findById(requestId);
+      const user = req.userId;
+
+      console.log('user', user);
+
+      if (!user) {
+        throw new Error('user invalido');
+      }
+
+      requests.recyclerId = user;
+      requests.state = 'in_progess';
+      //console.log(requestId, 'new', requestsPut._doc);
+      const requestsUpdate = await Requests.findByIdAndUpdate(
+        requestId,
+        requests,
+        {
+          new: true,
+        },
+      );
+      res
+        .status(201)
+        .json({ message: 'Requests Updated', data: requestsUpdate });
+    } catch (error) {
+      res
+        .status(400)
+        .json({ message: 'Requests could not be Updated', data: error });
     }
   },
   //update

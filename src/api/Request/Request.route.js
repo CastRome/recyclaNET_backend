@@ -4,8 +4,9 @@ const { auth } = require('../Utils/auth');
 const formData = require('../Utils/formData');
 
 router.route('/').post(auth, formData, requestController.create);
-router.route('/algo').post(auth, requestController.create);
-router.route('/').get(requestController.list);
+router.route('/').get(auth, requestController.list);
+router.route('/pending').get(auth, requestController.listPending);
 router.route('/:requestId').put(auth, requestController.update);
-
+router.route('/cancel/:requestId').put(auth, requestController.cancel);
+router.route('/aceptar/:requestId').put(auth, requestController.aceptar);
 module.exports = router;
