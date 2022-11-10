@@ -28,7 +28,7 @@ module.exports = {
       const user = await User.create(newUser);
 
       const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
-        expiresIn: 60 * 60 * 24,
+        expiresIn: 60 * 60 * 24 * 5,
       });
       await transporter.sendMail(welcome(newUser));
       res.status(201).json({
@@ -58,7 +58,7 @@ module.exports = {
       }
 
       const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
-        expiresIn: 60 * 60 * 24,
+        expiresIn: 60 * 60 * 24 * 5,
       });
 
       const role = user.role;

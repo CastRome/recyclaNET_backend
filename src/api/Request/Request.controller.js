@@ -1,5 +1,5 @@
 const Requests = require('./Request.model');
-
+const Users = require('../Users/Users.model');
 module.exports = {
   //get all
   async list(req, res) {
@@ -14,6 +14,10 @@ module.exports = {
         .populate({
           path: 'userId',
           select: '-_id name role lastname email',
+        })
+        .populate({
+          path: 'recyclerId',
+          select: '-_id name role lastname email',
         });
       res.status(201).json({ message: 'requests found', data: requests });
     } catch (err) {
@@ -27,10 +31,41 @@ module.exports = {
       if (!user) {
         throw new Error('Favs invalido');
       }
-      const requests = await Requests.find({ recyclerId: '', state: 'pending' })
+      const requests = await Requests.find({
+        state: 'pending',
+      })
         .select(' ')
         .populate({
           path: 'userId',
+          select: '-_id name role lastname email',
+        })
+        .populate({
+          path: 'recyclerId',
+          select: '-_id name role lastname email',
+        });
+      res.status(201).json({ message: 'requests found', data: requests });
+    } catch (err) {
+      res.status(400).json(err);
+    }
+  },
+  async listProgress(req, res) {
+    try {
+      const user = req.userId;
+      //console.log('data', data);
+      if (!user) {
+        throw new Error('Favs invalido');
+      }
+      const requests = await Requests.find({
+        recyclerId: user,
+        state: 'in_progress',
+      })
+        .select(' ')
+        .populate({
+          path: 'userId',
+          select: '-_id name role lastname email',
+        })
+        .populate({
+          path: 'recyclerId',
           select: '-_id name role lastname email',
         });
       res.status(201).json({ message: 'requests found', data: requests });
@@ -73,8 +108,8 @@ module.exports = {
         ...data,
         materials: matter,
         userId: user,
-        recyclerId: '',
       };
+      data.materials = matter;
       //console.log('new', newrequests);
 
       const requests = await Requests.create(newrequests);
@@ -130,16 +165,44 @@ module.exports = {
     try {
       const { requestId } = req.params;
       const requests = await Requests.findById(requestId);
-      const user = req.userId;
+      const user = await Users.findById(req.userId);
+      // const userUser =
 
       console.log('user', user);
 
       if (!user) {
         throw new Error('user invalido');
       }
+      requests.recyclerId.push(user._id);
+      requests.state = 'in_progress';
+      //console.log(requestId, 'new', requestsPut._doc);
+      const requestsUpdate = await Requests.findByIdAndUpdate(
+        requestId,
+        requests,
+        {
+          new: true,
+        },
+      );
+      res
+        .status(201)
+        .json({ message: 'Requests Updated', data: requestsUpdate });
+    } catch (error) {
+      res
+        .status(400)
+        .json({ message: 'Requests could not be Updated', data: error });
+    }
+  },
+  async completar(req, res) {
+    try {
+      const { requestId } = req.params;
+      const requests = await Requests.findById(requestId);
+      const user = req.userId;
 
-      requests.recyclerId = user;
-      requests.state = 'in_progess';
+      if (!user) {
+        throw new Error('user invalido');
+      }
+
+      requests.state = 'complete';
       //console.log(requestId, 'new', requestsPut._doc);
       const requestsUpdate = await Requests.findByIdAndUpdate(
         requestId,
