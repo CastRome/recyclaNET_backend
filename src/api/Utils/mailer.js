@@ -61,7 +61,7 @@ exports.aceptedRecycler = (user, requests, userUser) => {
         <h1> Dear ${user.name}</h1>
         <p> thank you for taking the order ${requests._id}  </p>
         <p> please schedule for the ${requests.date} - ${requests.hour} </p>
-        <p> ${userUser.name} will be waiting for you at ${requests.directions} </p>
+        <p> ${userUser.name} ${userUser.lastname} will be waiting for you at ${requests.direction} </p>
       </div>
     `,
     text: `new request ${requests._id}`,
@@ -76,7 +76,7 @@ exports.aceptedUser = (user, requests, recycler) => {
     html: `
       <div>
         <h1> Dear ${user.name}</h1>
-        <p> Your order ${requests._id} was assing to ${recycler.name} </p>
+        <p> Your order ${requests._id} was assing to ${recycler.name} ${recycler.lastname} </p>
         <p> please have everything in order the ${requests.date} - ${requests.hour} </p>
         <p> we will send you another email with the updates</p>
       </div>

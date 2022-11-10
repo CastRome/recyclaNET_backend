@@ -182,7 +182,7 @@ module.exports = {
 
       console.log('user', user);
 
-      if (!user) {
+      if (!user._id) {
         throw new Error('user invalido');
       }
       requests.recyclerId.push(user._id);
@@ -213,9 +213,9 @@ module.exports = {
     try {
       const { requestId } = req.params;
       const requests = await Requests.findById(requestId);
-      const user = req.userId;
-
-      if (!user) {
+      //const user = req.userId;
+      const user = await Users.findById(req.userId);
+      if (!user._id) {
         throw new Error('user invalido');
       }
 
@@ -279,6 +279,7 @@ module.exports = {
       res
         .status(400)
         .json({ message: 'Requests could not be Updated', data: error });
+      req.userId;
     }
   },
   //delete
