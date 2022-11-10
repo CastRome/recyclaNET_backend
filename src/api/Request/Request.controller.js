@@ -1,5 +1,13 @@
 const Requests = require('./Request.model');
 const Users = require('../Users/Users.model');
+const {
+  transporter,
+  created,
+  completeRecycler,
+  completeUser,
+  aceptedUser,
+  aceptedRecycler,
+} = require('../Utils/mailer');
 module.exports = {
   //get all
   async list(req, res) {
@@ -95,9 +103,11 @@ module.exports = {
     try {
       //console.log(1);
       const data = req.body;
-      const user = req.userId;
+
+      const user = await Users.findById(req.userId);
+
       //console.log('data', data);
-      if (!user) {
+      if (!user_id) {
         throw new Error('Favs invalido');
       }
       let matter = [];
@@ -113,6 +123,8 @@ module.exports = {
       //console.log('new', newrequests);
 
       const requests = await Requests.create(newrequests);
+      await transporter.sendMail(created(user, requests));
+
       res.status(201).json({
         message: 'Requests Created',
         data: { data, id: requests._id },
@@ -183,6 +195,11 @@ module.exports = {
           new: true,
         },
       );
+
+      const userUser = await Users.findById(requests.userId);
+      await transporter.sendMail(aceptedRecycler(userUser, requests, user));
+      await transporter.sendMail(aceptedUser(userUser, requests, user));
+
       res
         .status(201)
         .json({ message: 'Requests Updated', data: requestsUpdate });
@@ -211,6 +228,10 @@ module.exports = {
           new: true,
         },
       );
+
+      const userUser = await Users.findById(requests.userId);
+      await transporter.sendMail(completeRecycler(user, requests));
+      await transporter.sendMail(completeUser(userUser, requests));
       res
         .status(201)
         .json({ message: 'Requests Updated', data: requestsUpdate });
