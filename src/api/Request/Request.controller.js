@@ -106,8 +106,7 @@ module.exports = {
 
       const user = await Users.findById(req.userId);
 
-      //console.log('data', data);
-      if (!user_id) {
+      if (!user._id) {
         throw new Error('Favs invalido');
       }
       let matter = [];
@@ -117,10 +116,9 @@ module.exports = {
       const newrequests = {
         ...data,
         materials: matter,
-        userId: user,
+        userId: req.userId,
       };
       data.materials = matter;
-      //console.log('new', newrequests);
 
       const requests = await Requests.create(newrequests);
       await transporter.sendMail(created(user, requests));
