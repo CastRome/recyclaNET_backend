@@ -3,8 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const userRoute = require('./api/Users/Users.route');
-const favsRoute = require('./api/Favs/Favs.route');
-const listsRoute = require('./api/Lists/Lists.route');
 const requestRoute = require('./api/Request/Request.route');
 const app = express();
 var allowCrossDomain = function (req, res, next) {
@@ -30,8 +28,6 @@ app.use(morgan('tiny'));
 //app.use(corsOptions);
 
 app.use('/auth/local', userRoute);
-app.use('/api/favs', favsRoute);
-app.use('/api/lists', listsRoute);
 app.use('/api/requests', requestRoute);
 
 module.exports = app;
